@@ -1,22 +1,23 @@
 """
 Celery configuration for the Tech Debt Analyzer.
 """
+
 import os
 
 # Redis configuration
-redis_url = os.getenv('REDIS_URL', 'redis://localhost:6379/0')
+redis_url = os.getenv("REDIS_URL", "redis://localhost:6379/0")
 
 # Celery broker and result backend
 broker_url = redis_url
 result_backend = redis_url
 
 # Serialization settings
-task_serializer = 'json'
-accept_content = ['json']
-result_serializer = 'json'
+task_serializer = "json"
+accept_content = ["json"]
+result_serializer = "json"
 
 # Timezone settings
-timezone = 'UTC'
+timezone = "UTC"
 enable_utc = True
 
 # Worker configuration

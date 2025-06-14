@@ -9,9 +9,13 @@ import subprocess
 
 # Use centralized logging
 from logging import getLogger
+
 log = getLogger(__name__)
 
-def scan_repo_with_docker(git_url: str, scanner_image: str = "scanner-image:latest", timeout: int = 60):
+
+def scan_repo_with_docker(
+    git_url: str, scanner_image: str = "scanner-image:latest", timeout: int = 60
+):
     """
     Clones a Git repository, runs a Docker-based scan on it, and returns the results.
 
@@ -41,9 +45,12 @@ def scan_repo_with_docker(git_url: str, scanner_image: str = "scanner-image:late
         log.info(f"[{job_id}] Cloning repository: {git_url}")
         # Use subprocess to ensure we get full history
         try:
-            subprocess.run([
-                "git", "clone", git_url, repo_dir
-            ], capture_output=True, text=True, check=True)
+            subprocess.run(
+                ["git", "clone", git_url, repo_dir],
+                capture_output=True,
+                text=True,
+                check=True,
+            )
         except subprocess.CalledProcessError as e:
             log.error(f"[{job_id}] Git clone failed for {git_url}. Error: {e.stderr}")
             raise  # Re-raise the exception to be caught by the main handler
@@ -58,21 +65,22 @@ def scan_repo_with_docker(git_url: str, scanner_image: str = "scanner-image:late
             repo_dir: {"bind": "/repo", "mode": "ro"},
             output_dir: {"bind": "/output", "mode": "rw"},
         }
-        
+
         log.info(f"[{job_id}] Running scanner container '{scanner_image}'")
         container = client.containers.run(
             scanner_image,
             volumes=volumes,
             detach=True,
         )
-        
+
         # Wait for the container to finish, with a timeout
         result = container.wait(timeout=timeout)
-        
-        container_logs = container.logs().decode("utf-8")
-        log.info(f"[{job_id}] Container finished with exit code {result['StatusCode']}.")
-        log.debug(f"[{job_id}] Full container logs:\n{container_logs}")
 
+        container_logs = container.logs().decode("utf-8")
+        log.info(
+            f"[{job_id}] Container finished with exit code {result['StatusCode']}."
+        )
+        log.debug(f"[{job_id}] Full container logs:\n{container_logs}")
 
         # Check if results file exists
         if os.path.exists(results_file):
@@ -81,14 +89,18 @@ def scan_repo_with_docker(git_url: str, scanner_image: str = "scanner-image:late
             log.info(f"[{job_id}] Scan complete. Found {len(scan_results)} issues.")
             return scan_results
         else:
-            log.error(f"[{job_id}] Scan failed: results.json not found. Container logs: {container_logs}")
+            log.error(
+                f"[{job_id}] Scan failed: results.json not found. Container logs: {container_logs}"
+            )
             return {"error": "results.json not found", "logs": container_logs}
 
     except git.GitCommandError as e:
         log.error(f"[{job_id}] Git clone command error: {e}")
         return {"error": f"Git clone failed: {e}"}
     except docker.errors.ContainerError as e:
-        log.error(f"[{job_id}] Docker container execution failed: {e.stderr}", exc_info=True)
+        log.error(
+            f"[{job_id}] Docker container execution failed: {e.stderr}", exc_info=True
+        )
         return {"error": f"Docker container failed: {e}"}
     except docker.errors.ImageNotFound:
         log.error(f"[{job_id}] Docker image not found: {scanner_image}")
@@ -96,31 +108,34 @@ def scan_repo_with_docker(git_url: str, scanner_image: str = "scanner-image:late
     except Exception as e:
         # This will catch the timeout from container.wait
         if "Timeout" in str(e):
-             log.error(f"[{job_id}] Scan timed out after {timeout} seconds.")
-             return {"error": f"Scan timed out after {timeout} seconds."}
-        log.error(f"[{job_id}] An unexpected error occurred in docker_runner: {e}", exc_info=True)
+            log.error(f"[{job_id}] Scan timed out after {timeout} seconds.")
+            return {"error": f"Scan timed out after {timeout} seconds."}
+        log.error(
+            f"[{job_id}] An unexpected error occurred in docker_runner: {e}",
+            exc_info=True,
+        )
         return {"error": f"An unexpected error occurred: {e}"}
     finally:
         # Clean up the temporary directory
         if os.path.exists(job_dir):
             shutil.rmtree(job_dir)
             log.info(f"[{job_id}] Cleaned up temporary directory: {job_dir}")
-        
+
         # Stop and remove the container if it's still running (e.g., on timeout)
         try:
-            if 'container' in locals() and container.status == 'running':
+            if "container" in locals() and container.status == "running":
                 container.stop()
                 log.info(f"[{job_id}] Stopped container.")
-            if 'container' in locals():
+            if "container" in locals():
                 container.remove()
                 log.info(f"[{job_id}] Removed container.")
         except docker.errors.NotFound:
-            pass # Container already removed
+            pass  # Container already removed
         except Exception as e:
             log.error(f"[{job_id}] Error during container cleanup: {e}", exc_info=True)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Example usage:
     # Make sure you have a repository to test with.
     # For example, you can use this simple flask app: https://github.com/pallets/flask

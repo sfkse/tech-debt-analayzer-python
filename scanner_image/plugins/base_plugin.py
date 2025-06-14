@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 
+
 class BasePlugin(ABC):
     """
     Abstract base class for all scanner plugins.
@@ -18,4 +19,4 @@ class BasePlugin(ABC):
             A list of dictionaries, where each dictionary represents a found issue.
             An empty list should be returned if no issues are found.
         """
-        pass 
+        pass

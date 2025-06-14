@@ -1,5 +1,4 @@
 import uvicorn
-import logging
 from dotenv import load_dotenv
 from fastapi import FastAPI
 
@@ -17,10 +16,11 @@ storage_service = SupabaseStorageService()
 app = FastAPI(
     title="Tech Debt Analyzer API",
     description="API for scanning Git repositories for technical debt",
-    version="1.0.0"
+    version="1.0.0",
 )
 
 app.include_router(scan_router)
+
 
 @app.get("/")
 async def root():
@@ -28,6 +28,7 @@ async def root():
     logger.info("Health check endpoint accessed")
     return {"message": "Tech Debt Analyzer API is running"}
 
+
 if __name__ == "__main__":
     logger.info("Starting FastAPI server")
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True) 
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

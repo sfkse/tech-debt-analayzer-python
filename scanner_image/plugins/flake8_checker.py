@@ -3,6 +3,7 @@ import sys
 from .base_plugin import BasePlugin
 from constants import ISSUE_TYPES
 
+
 class Flake8Checker(BasePlugin):
     """A plugin to run flake8 static analysis."""
 
@@ -33,15 +34,19 @@ class Flake8Checker(BasePlugin):
             parts = line.split(":")
             if len(parts) >= 4:
                 try:
-                    issues.append({
-                        "type": ISSUE_TYPES.FLAKE8,
-                        "file": parts[0][2:],  # remove './'
-                        "line": int(parts[1]),
-                        "code": parts[3].strip().split(" ")[0],
-                        "message": " ".join(parts[3].strip().split(" ")[1:]),
-                    })
+                    issues.append(
+                        {
+                            "type": ISSUE_TYPES.FLAKE8,
+                            "file": parts[0][2:],  # remove './'
+                            "line": int(parts[1]),
+                            "code": parts[3].strip().split(" ")[0],
+                            "message": " ".join(parts[3].strip().split(" ")[1:]),
+                        }
+                    )
                 except (ValueError, IndexError):
-                    print(f"Could not parse flake8 output line: {line}", file=sys.stderr)
-        
+                    print(
+                        f"Could not parse flake8 output line: {line}", file=sys.stderr
+                    )
+
         print(f"Flake8 checker found {len(issues)} issues.")
-        return issues 
+        return issues

@@ -4,6 +4,7 @@ import json
 import os
 import sys
 
+
 class CoverageChecker(BasePlugin):
     """
     A plugin to check for test coverage reports.
@@ -22,24 +23,32 @@ class CoverageChecker(BasePlugin):
             try:
                 with open(coverage_file, "r") as f:
                     data = json.load(f)
-                
+
                 # Assuming a standard coverage.py JSON format
                 if "meta" in data and "totals" in data:
-                    coverage_percent = data['totals']['percent_covered']
+                    coverage_percent = data["totals"]["percent_covered"]
                     if coverage_percent < 80.0:
-                         issues.append({
-                            "type": ISSUE_TYPES.COVERAGE,
-                            "file": "coverage.json",
-                            "line": 1,
-                            "code": "LOW_COVERAGE",
-                            "message": f"Test coverage is {coverage_percent:.2f}%, which is below the 80% threshold.",
-                        })
+                        issues.append(
+                            {
+                                "type": ISSUE_TYPES.COVERAGE,
+                                "file": "coverage.json",
+                                "line": 1,
+                                "code": "LOW_COVERAGE",
+                                "message": f"Test coverage is {coverage_percent:.2f}%, which is below the 80% threshold.",
+                            }
+                        )
             except json.JSONDecodeError:
-                print(f"Coverage checker: Could not decode {coverage_file}", file=sys.stderr)
+                print(
+                    f"Coverage checker: Could not decode {coverage_file}",
+                    file=sys.stderr,
+                )
             except Exception as e:
-                print(f"An unexpected error occurred in CoverageChecker: {e}", file=sys.stderr)
+                print(
+                    f"An unexpected error occurred in CoverageChecker: {e}",
+                    file=sys.stderr,
+                )
         else:
             print("Coverage checker: No coverage.json file found.")
-            
+
         print(f"Coverage checker found {len(issues)} issues.")
-        return issues 
+        return issues
