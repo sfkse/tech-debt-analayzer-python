@@ -1,4 +1,5 @@
 from .base_plugin import BasePlugin
+from constants import ISSUE_TYPES
 import subprocess
 import sys
 import os
@@ -59,7 +60,7 @@ class ChurnChecker(BasePlugin):
                 for file_path, commit_count in sorted_files:
                     if commit_count > 5:  # Only report files with more than 5 commits
                         issues.append({
-                            "type": "git_churn",
+                            "type": ISSUE_TYPES.GIT_CHURN,
                             "file": file_path,
                             "line": 1, # Churn is file-level, so line is not applicable
                             "code": "HIGH_CHURN",

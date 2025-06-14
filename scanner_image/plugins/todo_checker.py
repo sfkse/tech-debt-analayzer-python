@@ -1,4 +1,5 @@
 from .base_plugin import BasePlugin
+from constants import ISSUE_TYPES
 import os
 import re
 import sys
@@ -36,7 +37,7 @@ class TodoChecker(BasePlugin):
                                 keyword = match.group(1).upper()
                                 message = match.group(2).strip()
                                 issues.append({
-                                    "type": "todo_comment",
+                                    "type": ISSUE_TYPES.TODO_COMMENT,
                                     "file": os.path.relpath(filepath, repo_path),
                                     "line": line_num,
                                     "code": f"FOUND_{keyword}",

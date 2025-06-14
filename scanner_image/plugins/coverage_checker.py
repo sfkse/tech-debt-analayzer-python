@@ -1,4 +1,5 @@
 from .base_plugin import BasePlugin
+from constants import ISSUE_TYPES
 import json
 import os
 import sys
@@ -27,7 +28,7 @@ class CoverageChecker(BasePlugin):
                     coverage_percent = data['totals']['percent_covered']
                     if coverage_percent < 80.0:
                          issues.append({
-                            "type": "coverage",
+                            "type": ISSUE_TYPES.COVERAGE,
                             "file": "coverage.json",
                             "line": 1,
                             "code": "LOW_COVERAGE",

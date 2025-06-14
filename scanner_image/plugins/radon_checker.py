@@ -1,4 +1,5 @@
 from .base_plugin import BasePlugin
+from constants import ISSUE_TYPES
 from radon.complexity import cc_visit
 import os
 import sys
@@ -31,7 +32,7 @@ class RadonChecker(BasePlugin):
                             for result in complexity_results:
                                 if result.complexity > 10:  # Only report functions with complexity > 10
                                     issues.append({
-                                        "type": "radon_complexity",
+                                        "type": ISSUE_TYPES.RADON_COMPLEXITY,
                                         "file": os.path.relpath(filepath, repo_path),
                                         "line": result.lineno,
                                         "code": f"Complexity-{result.complexity}",

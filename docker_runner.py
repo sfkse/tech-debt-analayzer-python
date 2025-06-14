@@ -8,8 +8,8 @@ import uuid
 import subprocess
 
 # Use centralized logging
-from config.app_config import get_logger
-log = get_logger(__name__)
+from logging import getLogger
+log = getLogger(__name__)
 
 def scan_repo_with_docker(git_url: str, scanner_image: str = "scanner-image:latest", timeout: int = 60):
     """

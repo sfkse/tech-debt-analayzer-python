@@ -71,14 +71,4 @@ def setup_logging():
     logging.info("Logging system initialized successfully")
     logging.info(f"Log files: {log_dir / 'app.log'}, {log_dir / 'error.log'}")
 
-def get_logger(name: str) -> logging.Logger:
-    """
-    Get a logger instance for a specific module.
-    
-    Args:
-        name: Usually __name__ from the calling module
-        
-    Returns:
-        Configured logger instance
-    """
-    return logging.getLogger(f"techdeptanalyzer.{name}") 
+    return logging.getLogger("techdeptanalyzer")
